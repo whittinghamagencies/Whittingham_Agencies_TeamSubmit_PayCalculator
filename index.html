@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Insurance Commission Calculator</title>
+  <style>
+    body { font-family: Arial, sans-serif; max-width: 800px; margin: 40px auto; padding: 20px; }
+    h1, h2 { color: #333; }
+    label { display: block; margin: 15px 0 5px; font-weight: bold; }
+    input, select { width: 100%; padding: 8px; margin-bottom: 10px; }
+    .result { font-size: 1.2em; font-weight: bold; color: #0066cc; margin: 10px 0; }
+    button { padding: 12px 24px; font-size: 1.1em; background: #0066cc; color: white; border: none; cursor: pointer; }
+    button:hover { background: #0055aa; }
+  </style>
+</head>
+<body>
+  <h1>Insurance Commission Calculator</h1>
+  
+  <h2>Business & Agent Data</h2>
+  <label>Business Name: <input type="text" id="businessName" value=""></label>
+  
+  <label>Number of Employees: <input type="number" id="numEmployees" value="10"></label>
+  <label>Participation Rate (%): <input type="number" id="partRate" value="60"></label>
+  <label>Hourly Wage ($): <input type="number" id="hourlyWage" value="20"></label>
+  
+  <label>Est. Commission Rate (%): <input type="number" id="commRate" value="47"></label>
+  <label>Life-Health Split (%): <input type="number" id="lifeSplit" value="85"></label>
+  <label>Bonus Level (%): <input type="number" id="bonusLevel" value="20"></label>
+
+  <h2>Results</h2>
+  <div class="result">Employees with Coverage: <span id="covered">6</span></div>
+  <div class="result">Annual Premium per Employee: $<span id="annualPerEmp">1040</span></div>
+  <div class="result">Total Annual Premium: $<span id="totalAP">6240</span></div>
+  <div class="result">Yearly Commission: $<span id="yearlyComm">2933</span></div>
+  <div class="result">Direct Pay (ICM): $<span id="directPay">1760</span></div>
+  <div class="result">Life Annual Premium: $<span id="lifeAP">5304</span></div>
+  <div class="result">Bonus Payout: $<span id="bonus">1061</span></div>
+  <div class="result"><strong>Total ICM: $<span id="totalICM">2820</span></strong></div>
+
+  <button onclick="calculate()">Calculate</button>
+
+  <script>
+    function calculate() {
+      const numEmp = parseFloat(document.getElementById('numEmployees').value) || 0;
+      const partRate = parseFloat(document.getElementById('partRate').value) / 100 || 0;
+      const hourly = parseFloat(document.getElementById('hourlyWage').value) || 0;
+      const commRate = parseFloat(document.getElementById('commRate').value) / 100 || 0;
+      const lifeSplit = parseFloat(document.getElementById('lifeSplit').value) / 100 || 0;
+      const bonusLvl = parseFloat(document.getElementById('bonusLevel').value) / 100 || 0;
+
+      // Participation
+      const covered = Math.round(numEmp * partRate);
+      document.getElementById('covered').textContent = covered;
+
+      // Annual Premium
+      const annualPerEmp = hourly * 52;
+      const totalAP = covered * annualPerEmp;
+      document.getElementById('annualPerEmp').textContent = annualPerEmp.toFixed(2);
+      document.getElementById('totalAP').textContent = totalAP.toFixed(2);
+
+      // Commission
+      const yearlyComm = totalAP * commRate;
+      document.getElementById('yearlyComm').textContent = yearlyComm.toFixed(0);
+
+      // Direct Pay
+      const directPay = yearlyComm * 0.60; // 60% advanced rate from sheet
+      document.getElementById('directPay').textContent = directPay.toFixed(0);
+
+      // Bonus
+      const lifeAP = totalAP * lifeSplit;
+      const bonus = lifeAP * bonusLvl;
+      document.getElementById('lifeAP').textContent = lifeAP.toFixed(0);
+      document.getElementById('bonus').textContent = bonus.toFixed(0);
+
+      // Total ICM
+      const totalICM = directPay + bonus;
+      document.getElementById('totalICM').textContent = totalICM.toFixed(0);
+    }
+
+    // Auto-calculate as user types
+    document.querySelectorAll('input').forEach(input => {
+      input.addEventListener('input', calculate);
+    });
+
+    // Initial calculation
+    window.onload = calculate;
+  </script>
+</body>
+</html>
