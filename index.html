@@ -5,84 +5,63 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Globe Life - Commission Calculator</title>
   <style>
-    body { 
-      font-family: Arial, sans-serif; 
-      max-width: 800px; 
-      margin: 40px auto; 
-      padding: 20px; 
-      background: #f9f9f9;
+    body { font-family: Arial, sans-serif; max-width: 900px; margin: 40px auto; padding: 20px; background: #f9f9f9; }
+    header { text-align: center; margin-bottom: 20px; }
+    img { max-width: 320px; height: auto; }
+    h1 { color: #003087; margin: 10px 0; }
+    
+    .tabs { display: flex; flex-wrap: wrap; gap: 5px; margin: 20px 0; }
+    .tab-button {
+      padding: 12px 20px; background: #ddd; border: none; border-radius: 6px 6px 0 0; cursor: pointer; font-weight: bold;
     }
-    header {
-      text-align: center;
-      margin-bottom: 30px;
-    }
-    img {
-      max-width: 320px;
-      height: auto;
-      margin-bottom: 10px;
-    }
-    h1 { 
-      color: #003087; 
-      text-align: center;
-      margin: 10px 0 5px 0;
-    }
-    h2 { 
-      color: #333; 
-      border-bottom: 2px solid #003087;
-      padding-bottom: 8px;
-    }
-    label { 
-      display: block; 
-      margin: 15px 0 5px; 
-      font-weight: bold; 
-    }
-    input, select { 
-      width: 100%; 
-      padding: 10px; 
-      margin-bottom: 15px; 
-      border: 1px solid #ccc;
-      border-radius: 4px;
-    }
-    .result { 
-      font-size: 1.15em; 
-      font-weight: bold; 
-      color: #003087; 
-      background: white;
-      padding: 12px;
-      border-radius: 6px;
-      margin: 8px 0;
-      box-shadow: 0 1px 3px rgba(0,0,0,0.1);
-    }
-    button { 
-      padding: 14px 32px; 
-      font-size: 1.1em; 
-      background: #003087; 
-      color: white; 
-      border: none; 
-      border-radius: 6px;
-      cursor: pointer;
-      width: 100%;
-      margin-top: 20px;
-    }
+    .tab-button.active { background: #003087; color: white; }
+
+    label { display: block; margin: 12px 0 5px; font-weight: bold; }
+    input, select { width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 4px; }
+    .result { font-size: 1.15em; font-weight: bold; color: #003087; background: white; padding: 12px; border-radius: 6px; margin: 8px 0; box-shadow: 0 1px 3px rgba(0,0,0,0.1); }
+    button { padding: 14px; font-size: 1.1em; background: #003087; color: white; border: none; border-radius: 6px; cursor: pointer; width: 100%; margin-top: 20px; }
     button:hover { background: #002266; }
   </style>
 </head>
 <body>
   <header>
-    <img src="image0.jpeg" alt="Globe Life Liberty National Division - The Whittingham Agencies">
-    <h1>Commission Calculator</h1>
+    <img src="image0.jpeg" alt="Globe Life Logo">
+    <h1>Commission Calculator - The Whittingham Agencies</h1>
   </header>
 
-  <h2>Business & Agent Data</h2>
+  <!-- Shared Inputs -->
+  <h2>Business & Group Info</h2>
   <label>Business Name: <input type="text" id="businessName" placeholder="Enter business name"></label>
-  
-  <label>Number of Employees: <input type="number" id="numEmployees" value=""></label>
+  <label>Number of Employees: <input type="number" id="numEmployees" value="10"></label>
   <label>Participation Rate (%): <input type="number" id="partRate" value="60"></label>
-  <label>Hourly Wage ($): <input type="number" id="hourlyWage" value=""></label>
-  
-  <label>Est. Commission Rate (%): <input type="number" id="commRate" value="47"></label>
-  <label>Life-Health Split (%): <input type="number" id="lifeSplit" value="85"></label>
-  <label>Bonus Level (%): <input type="number" id="bonusLevel" value="10"></label>
+  <label>Hourly Wage ($): <input type="number" id="hourlyWage" value="20"></label>
+
+  <!-- Role Selector -->
+  <h2>Select Role / Calculation</h2>
+  <select id="roleSelector" onchange="switchRole()">
+    <option value="agent">Agent</option>
+    <option value="sa-personal">Supervising Agent - Personal Production</option>
+    <option value="sa-team">Supervising Agent - Team Production</option>
+    <option value="ga-personal">General Agent - Personal Production</option>
+    <option value="ga-team">General Agent - Team Production</option>
+    <option value="agency-director">Agency Director</option>
+  </select>
+
+  <!-- Agent Fields -->
+  <div id="agent-fields">
+    <h2>Agent Specific</h2>
+    <label>Est. Commission Rate (%): <input type="number" id="commRate" value="47"></label>
+    <label>Life-Health Split (%): <input type="number" id="lifeSplit" value="85"></label>
+    <label>Bonus Level (%): <input type="number" id="bonusLevel" value="20"></label>
+    <label>Advance Rate (%): <input type="number" id="advanceRate" value="60"></label>
+  </div>
+
+  <!-- Placeholder for other roles (expand later) -->
+  <div id="other-fields" style="display:none;">
+    <h2>Role-Specific Inputs</h2>
+    <p id="role-description">Additional fields for this role will appear here.</p>
+    <!-- We'll add more inputs as you provide details from other tabs -->
+  </div>
 
   <h2>Results</h2>
   <div class="result">Employees with Coverage: <span id="covered">6</span></div>
@@ -97,40 +76,70 @@
   <button onclick="calculate()">Recalculate</button>
 
   <script>
+    let currentRole = "agent";
+
+    function switchRole() {
+      currentRole = document.getElementById('roleSelector').value;
+      const agentFields = document.getElementById('agent-fields');
+      const otherFields = document.getElementById('other-fields');
+
+      if (currentRole === "agent") {
+        agentFields.style.display = "block";
+        otherFields.style.display = "none";
+      } else {
+        agentFields.style.display = "none";
+        otherFields.style.display = "block";
+        document.getElementById('role-description').textContent = `Calculator for ${currentRole.replace('-', ' ')} - fields coming based on your sheet.`;
+      }
+      calculate();
+    }
+
     function calculate() {
       const numEmp = parseFloat(document.getElementById('numEmployees').value) || 0;
       const partRate = parseFloat(document.getElementById('partRate').value) / 100 || 0;
       const hourly = parseFloat(document.getElementById('hourlyWage').value) || 0;
-      const commRate = parseFloat(document.getElementById('commRate').value) / 100 || 0;
-      const lifeSplit = parseFloat(document.getElementById('lifeSplit').value) / 100 || 0;
-      const bonusLvl = parseFloat(document.getElementById('bonusLevel').value) / 100 || 0;
 
       const covered = Math.round(numEmp * partRate);
       const annualPerEmp = hourly * 52;
       const totalAP = covered * annualPerEmp;
-      const yearlyComm = totalAP * commRate;
-      const directPay = yearlyComm * 0.60;
-      const lifeAP = totalAP * lifeSplit;
-      const bonus = lifeAP * bonusLvl;
-      const totalICM = directPay + bonus;
 
       document.getElementById('covered').textContent = covered;
       document.getElementById('annualPerEmp').textContent = annualPerEmp.toLocaleString('en-US');
       document.getElementById('totalAP').textContent = totalAP.toLocaleString('en-US');
-      document.getElementById('yearlyComm').textContent = Math.round(yearlyComm).toLocaleString('en-US');
-      document.getElementById('directPay').textContent = Math.round(directPay).toLocaleString('en-US');
-      document.getElementById('lifeAP').textContent = Math.round(lifeAP).toLocaleString('en-US');
-      document.getElementById('bonus').textContent = Math.round(bonus).toLocaleString('en-US');
-      document.getElementById('totalICM').textContent = Math.round(totalICM).toLocaleString('en-US');
+
+      if (currentRole === "agent") {
+        const commRate = parseFloat(document.getElementById('commRate').value) / 100 || 0;
+        const lifeSplit = parseFloat(document.getElementById('lifeSplit').value) / 100 || 0;
+        const bonusLvl = parseFloat(document.getElementById('bonusLevel').value) / 100 || 0;
+        const advanceRate = parseFloat(document.getElementById('advanceRate').value) / 100 || 0.60;
+
+        const yearlyComm = totalAP * commRate;
+        const directPay = yearlyComm * advanceRate;
+        const lifeAP = totalAP * lifeSplit;
+        const bonus = lifeAP * bonusLvl;
+        const totalICM = directPay + bonus;
+
+        document.getElementById('yearlyComm').textContent = Math.round(yearlyComm).toLocaleString('en-US');
+        document.getElementById('directPay').textContent = Math.round(directPay).toLocaleString('en-US');
+        document.getElementById('lifeAP').textContent = Math.round(lifeAP).toLocaleString('en-US');
+        document.getElementById('bonus').textContent = Math.round(bonus).toLocaleString('en-US');
+        document.getElementById('totalICM').textContent = Math.round(totalICM).toLocaleString('en-US');
+      } else {
+        // Placeholder for other roles
+        document.getElementById('yearlyComm').textContent = "—";
+        document.getElementById('directPay').textContent = "—";
+        document.getElementById('lifeAP').textContent = "—";
+        document.getElementById('bonus').textContent = "—";
+        document.getElementById('totalICM').textContent = "Custom for role";
+      }
     }
 
-    // Auto-update as user types
-    document.querySelectorAll('input').forEach(input => {
-      input.addEventListener('input', calculate);
+    // Auto-calculate
+    document.querySelectorAll('input, select').forEach(el => {
+      el.addEventListener('input', calculate);
     });
 
-    // Run once when page loads
-    window.onload = calculate;
+    window.onload = () => { switchRole(); };
   </script>
 </body>
 </html>
