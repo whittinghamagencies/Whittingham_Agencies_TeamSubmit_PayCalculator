@@ -5,22 +5,23 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Globe Life - Commission Calculator</title>
   <style>
-    body { font-family: Arial, sans-serif; max-width: 900px; margin: 40px auto; padding: 20px; background: #f9f9f9; }
+    body { font-family: Arial, sans-serif; max-width: 950px; margin: 40px auto; padding: 20px; background: #f9f9f9; }
     header { text-align: center; margin-bottom: 20px; }
     img { max-width: 320px; height: auto; }
     h1 { color: #003087; margin: 10px 0; }
     
     .tabs { display: flex; flex-wrap: wrap; gap: 5px; margin: 20px 0; }
     .tab-button {
-      padding: 12px 20px; background: #ddd; border: none; border-radius: 6px 6px 0 0; cursor: pointer; font-weight: bold;
+      padding: 12px 18px; background: #ddd; border: none; border-radius: 6px 6px 0 0; cursor: pointer; font-weight: bold; font-size: 0.95em;
     }
     .tab-button.active { background: #003087; color: white; }
 
     label { display: block; margin: 12px 0 5px; font-weight: bold; }
-    input, select { width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 4px; }
+    input, select { width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box; }
     .result { font-size: 1.15em; font-weight: bold; color: #003087; background: white; padding: 12px; border-radius: 6px; margin: 8px 0; box-shadow: 0 1px 3px rgba(0,0,0,0.1); }
     button { padding: 14px; font-size: 1.1em; background: #003087; color: white; border: none; border-radius: 6px; cursor: pointer; width: 100%; margin-top: 20px; }
-    button:hover { background: #002266; }
+    .role-section { display: none; }
+    .role-section.active { display: block; }
   </style>
 </head>
 <body>
@@ -32,23 +33,23 @@
   <!-- Shared Inputs -->
   <h2>Business & Group Info</h2>
   <label>Business Name: <input type="text" id="businessName" placeholder="Enter business name"></label>
-  <label>Number of Employees: <input type="number" id="numEmployees" value="10"></label>
+  <label>Number of Employees: <input type="number" id="numEmployees" value="0"></label>
   <label>Participation Rate (%): <input type="number" id="partRate" value="60"></label>
   <label>Hourly Wage ($): <input type="number" id="hourlyWage" value="20"></label>
 
-  <!-- Role Selector -->
-  <h2>Select Role / Calculation</h2>
-  <select id="roleSelector" onchange="switchRole()">
-    <option value="agent">Agent</option>
-    <option value="sa-personal">Supervising Agent - Personal Production</option>
-    <option value="sa-team">Supervising Agent - Team Production</option>
-    <option value="ga-personal">General Agent - Personal Production</option>
-    <option value="ga-team">General Agent - Team Production</option>
-    <option value="agency-director">Agency Director</option>
-  </select>
+  <!-- Role Tabs -->
+  <h2>Select Role</h2>
+  <div class="tabs">
+    <button class="tab-button active" data-role="agent">Agent</button>
+    <button class="tab-button" data-role="sa-personal">SA Personal</button>
+    <button class="tab-button" data-role="sa-team">SA Team</button>
+    <button class="tab-button" data-role="ga-personal">GA Personal</button>
+    <button class="tab-button" data-role="ga-team">GA Team</button>
+    <button class="tab-button" data-role="agency-director">Agency Director</button>
+  </div>
 
-  <!-- Agent Fields -->
-  <div id="agent-fields">
+  <!-- Agent -->
+  <div id="agent" class="role-section active">
     <h2>Agent Specific</h2>
     <label>Est. Commission Rate (%): <input type="number" id="commRate" value="47"></label>
     <label>Life-Health Split (%): <input type="number" id="lifeSplit" value="85"></label>
@@ -56,43 +57,83 @@
     <label>Advance Rate (%): <input type="number" id="advanceRate" value="60"></label>
   </div>
 
-  <!-- Placeholder for other roles (expand later) -->
-  <div id="other-fields" style="display:none;">
-    <h2>Role-Specific Inputs</h2>
-    <p id="role-description">Additional fields for this role will appear here.</p>
-    <!-- We'll add more inputs as you provide details from other tabs -->
+  <!-- SA Personal -->
+  <div id="sa-personal" class="role-section">
+    <h2>Supervising Agent - Personal Production</h2>
+    <label>Personal Annual Premium: <input type="number" id="saPersAP" value="700"></label>
+    <label>Commission Rate (%): <input type="number" id="saPersCommRate" value="54"></label>
+    <label>Advance Rate (%): <input type="number" id="saPersAdvance" value="40"></label>
+    <label>Life-Health Split (%): <input type="number" id="saPersLifeSplit" value="85"></label>
+    <label>Bonus Level (%): <input type="number" id="saPersBonus" value="20"></label>
+  </div>
+
+  <!-- SA Team -->
+  <div id="sa-team" class="role-section">
+    <h2>Supervising Agent - Team Production</h2>
+    <label>Team Annual Premium: <input type="number" id="saTeamAP" value="3352"></label>
+    <label>Commission Rate (%): <input type="number" id="saTeamCommRate" value="8"></label>
+    <label>Advance Rate (%): <input type="number" id="saTeamAdvance" value="60"></label>
+    <label>Life-Health Split (%): <input type="number" id="saTeamLifeSplit" value="100"></label>
+    <label>Bonus Level (%): <input type="number" id="saTeamBonus" value="5"></label>
+  </div>
+
+  <!-- GA Personal -->
+  <div id="ga-personal" class="role-section">
+    <h2>General Agent - Personal Production</h2>
+    <label>Personal Annual Premium: <input type="number" id="gaPersAP" value="4200"></label>
+    <label>Commission Rate (%): <input type="number" id="gaPersCommRate" value="54"></label>
+    <label>Advance Rate (%): <input type="number" id="gaPersAdvance" value="60"></label>
+    <label>Life-Health Split (%): <input type="number" id="gaPersLifeSplit" value="85"></label>
+    <label>Bonus Level (%): <input type="number" id="gaPersBonus" value="20"></label>
+  </div>
+
+  <!-- GA Team -->
+  <div id="ga-team" class="role-section">
+    <h2>General Agent - Team Production</h2>
+    <label>Team Annual Premium: <input type="number" id="gaTeamAP" value="2000"></label>
+    <label>Commission Rate (%): <input type="number" id="gaTeamCommRate" value="13"></label>
+    <label>Advance Rate (%): <input type="number" id="gaTeamAdvance" value="60"></label>
+    <label>Life-Health Split (%): <input type="number" id="gaTeamLifeSplit" value="100"></label>
+    <label>Bonus Level (%): <input type="number" id="gaTeamBonus" value="5"></label>
+  </div>
+
+  <!-- Agency Director -->
+  <div id="agency-director" class="role-section">
+    <h2>Agency Director - Team Production</h2>
+    <label>Total Annual Premium: <input type="number" id="adTeamAP" value="15600"></label>
+    <label>Commission Rate (%): <input type="number" id="adCommRate" value="25"></label>
+    <label>Advance Rate (%): <input type="number" id="adAdvance" value="60"></label>
+    <label>Life-Health Split (%): <input type="number" id="adLifeSplit" value="85"></label>
+    <label>Bonus Level (%): <input type="number" id="adBonus" value="10"></label>
   </div>
 
   <h2>Results</h2>
-  <div class="result">Employees with Coverage: <span id="covered">6</span></div>
-  <div class="result">Annual Premium per Employee: $<span id="annualPerEmp">1,040</span></div>
-  <div class="result">Total Annual Premium: $<span id="totalAP">6,240</span></div>
-  <div class="result">Yearly Commission: $<span id="yearlyComm">2,933</span></div>
-  <div class="result">Direct Pay (ICM): $<span id="directPay">1,760</span></div>
-  <div class="result">Life Annual Premium: $<span id="lifeAP">5,304</span></div>
-  <div class="result">Bonus Payout: $<span id="bonus">1,061</span></div>
-  <div class="result"><strong>Total ICM: $<span id="totalICM">2,820</span></strong></div>
+  <div class="result">Number of Employees: <span id="numEmployeesDisplay">0</span></div>
+  <div class="result">Employees with Coverage: <span id="covered">0</span></div>
+  <div class="result">Annual Premium per Employee: $<span id="annualPerEmp">0</span></div>
+  <div class="result">Total Annual Premium: $<span id="totalAP">0</span></div>
+  <div class="result">Weekly Budget: $<span id="weeklyBudget">0</span></div>
+  <div class="result">Yearly Commission: $<span id="yearlyComm">0</span></div>
+  <div class="result">Direct Pay (ICM): $<span id="directPay">0</span></div>
+  <div class="result">Life Annual Premium: $<span id="lifeAP">0</span></div>
+  <div class="result">Bonus Payout: $<span id="bonus">0</span></div>
+  <div class="result"><strong>Total ICM: $<span id="totalICM">0</span></strong></div>
 
   <button onclick="calculate()">Recalculate</button>
 
   <script>
-    let currentRole = "agent";
+    // Tab switching
+    document.querySelectorAll('.tab-button').forEach(btn => {
+      btn.addEventListener('click', () => {
+        document.querySelectorAll('.tab-button').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
 
-    function switchRole() {
-      currentRole = document.getElementById('roleSelector').value;
-      const agentFields = document.getElementById('agent-fields');
-      const otherFields = document.getElementById('other-fields');
+        document.querySelectorAll('.role-section').forEach(sec => sec.classList.remove('active'));
+        document.getElementById(btn.dataset.role).classList.add('active');
 
-      if (currentRole === "agent") {
-        agentFields.style.display = "block";
-        otherFields.style.display = "none";
-      } else {
-        agentFields.style.display = "none";
-        otherFields.style.display = "block";
-        document.getElementById('role-description').textContent = `Calculator for ${currentRole.replace('-', ' ')} - fields coming based on your sheet.`;
-      }
-      calculate();
-    }
+        calculate();
+      });
+    });
 
     function calculate() {
       const numEmp = parseFloat(document.getElementById('numEmployees').value) || 0;
@@ -102,44 +143,107 @@
       const covered = Math.round(numEmp * partRate);
       const annualPerEmp = hourly * 52;
       const totalAP = covered * annualPerEmp;
+      const weeklyBudget = totalAP / 52;   // Weekly Budget = Total Annual Premium / 52
 
+      // Update shared results
+      document.getElementById('numEmployeesDisplay').textContent = numEmp;
       document.getElementById('covered').textContent = covered;
       document.getElementById('annualPerEmp').textContent = annualPerEmp.toLocaleString('en-US');
       document.getElementById('totalAP').textContent = totalAP.toLocaleString('en-US');
+      document.getElementById('weeklyBudget').textContent = weeklyBudget.toLocaleString('en-US', {minimumFractionDigits: 2});
 
-      if (currentRole === "agent") {
+      let yearlyComm = 0, directPay = 0, lifeAP = 0, bonus = 0, totalICM = 0;
+
+      const activeRole = document.querySelector('.role-section.active').id;
+
+      if (activeRole === "agent") {
         const commRate = parseFloat(document.getElementById('commRate').value) / 100 || 0;
         const lifeSplit = parseFloat(document.getElementById('lifeSplit').value) / 100 || 0;
         const bonusLvl = parseFloat(document.getElementById('bonusLevel').value) / 100 || 0;
-        const advanceRate = parseFloat(document.getElementById('advanceRate').value) / 100 || 0.60;
+        const advance = parseFloat(document.getElementById('advanceRate').value) / 100 || 0.6;
 
-        const yearlyComm = totalAP * commRate;
-        const directPay = yearlyComm * advanceRate;
-        const lifeAP = totalAP * lifeSplit;
-        const bonus = lifeAP * bonusLvl;
-        const totalICM = directPay + bonus;
+        yearlyComm = totalAP * commRate;
+        directPay = yearlyComm * advance;
+        lifeAP = totalAP * lifeSplit;
+        bonus = lifeAP * bonusLvl;
+        totalICM = directPay + bonus;
+      } 
+      else if (activeRole === "sa-personal") {
+        const baseAP = parseFloat(document.getElementById('saPersAP').value) || 0;
+        const commRate = parseFloat(document.getElementById('saPersCommRate').value) / 100 || 0;
+        const advance = parseFloat(document.getElementById('saPersAdvance').value) / 100 || 0;
+        const lifeSplit = parseFloat(document.getElementById('saPersLifeSplit').value) / 100 || 0;
+        const bonusLvl = parseFloat(document.getElementById('saPersBonus').value) / 100 || 0;
 
-        document.getElementById('yearlyComm').textContent = Math.round(yearlyComm).toLocaleString('en-US');
-        document.getElementById('directPay').textContent = Math.round(directPay).toLocaleString('en-US');
-        document.getElementById('lifeAP').textContent = Math.round(lifeAP).toLocaleString('en-US');
-        document.getElementById('bonus').textContent = Math.round(bonus).toLocaleString('en-US');
-        document.getElementById('totalICM').textContent = Math.round(totalICM).toLocaleString('en-US');
-      } else {
-        // Placeholder for other roles
-        document.getElementById('yearlyComm').textContent = "—";
-        document.getElementById('directPay').textContent = "—";
-        document.getElementById('lifeAP').textContent = "—";
-        document.getElementById('bonus').textContent = "—";
-        document.getElementById('totalICM').textContent = "Custom for role";
+        yearlyComm = baseAP * commRate;
+        directPay = yearlyComm * advance;
+        lifeAP = yearlyComm * lifeSplit;
+        bonus = lifeAP * bonusLvl;
+        totalICM = directPay + bonus;
+      } 
+      else if (activeRole === "sa-team") {
+        const baseAP = parseFloat(document.getElementById('saTeamAP').value) || 0;
+        const commRate = parseFloat(document.getElementById('saTeamCommRate').value) / 100 || 0;
+        const advance = parseFloat(document.getElementById('saTeamAdvance').value) / 100 || 0;
+        const lifeSplit = parseFloat(document.getElementById('saTeamLifeSplit').value) / 100 || 0;
+        const bonusLvl = parseFloat(document.getElementById('saTeamBonus').value) / 100 || 0;
+
+        yearlyComm = baseAP * commRate;
+        directPay = yearlyComm * advance;
+        lifeAP = yearlyComm * lifeSplit;
+        bonus = lifeAP * bonusLvl;
+        totalICM = directPay + bonus;
+      } 
+      else if (activeRole === "ga-personal") {
+        const baseAP = parseFloat(document.getElementById('gaPersAP').value) || 0;
+        const commRate = parseFloat(document.getElementById('gaPersCommRate').value) / 100 || 0;
+        const advance = parseFloat(document.getElementById('gaPersAdvance').value) / 100 || 0;
+        const lifeSplit = parseFloat(document.getElementById('gaPersLifeSplit').value) / 100 || 0;
+        const bonusLvl = parseFloat(document.getElementById('gaPersBonus').value) / 100 || 0;
+
+        yearlyComm = baseAP * commRate;
+        directPay = yearlyComm * advance;
+        lifeAP = yearlyComm * lifeSplit;
+        bonus = lifeAP * bonusLvl;
+        totalICM = directPay + bonus;
+      } 
+      else if (activeRole === "ga-team") {
+        const baseAP = parseFloat(document.getElementById('gaTeamAP').value) || 0;
+        const commRate = parseFloat(document.getElementById('gaTeamCommRate').value) / 100 || 0;
+        const advance = parseFloat(document.getElementById('gaTeamAdvance').value) / 100 || 0;
+        const lifeSplit = parseFloat(document.getElementById('gaTeamLifeSplit').value) / 100 || 0;
+        const bonusLvl = parseFloat(document.getElementById('gaTeamBonus').value) / 100 || 0;
+
+        yearlyComm = baseAP * commRate;
+        directPay = yearlyComm * advance;
+        lifeAP = yearlyComm * lifeSplit;
+        bonus = lifeAP * bonusLvl;
+        totalICM = directPay + bonus;
+      } 
+      else if (activeRole === "agency-director") {
+        const baseAP = parseFloat(document.getElementById('adTeamAP').value) || 0;
+        const commRate = parseFloat(document.getElementById('adCommRate').value) / 100 || 0;
+        const advance = parseFloat(document.getElementById('adAdvance').value) / 100 || 0;
+        const lifeSplit = parseFloat(document.getElementById('adLifeSplit').value) / 100 || 0;
+        const bonusLvl = parseFloat(document.getElementById('adBonus').value) / 100 || 0;
+
+        yearlyComm = baseAP * commRate;
+        directPay = yearlyComm * advance;
+        lifeAP = yearlyComm * lifeSplit;
+        bonus = lifeAP * bonusLvl;
+        totalICM = directPay + bonus;
       }
+
+      document.getElementById('yearlyComm').textContent = Math.round(yearlyComm).toLocaleString('en-US');
+      document.getElementById('directPay').textContent = Math.round(directPay).toLocaleString('en-US');
+      document.getElementById('lifeAP').textContent = Math.round(lifeAP).toLocaleString('en-US');
+      document.getElementById('bonus').textContent = Math.round(bonus).toLocaleString('en-US');
+      document.getElementById('totalICM').textContent = Math.round(totalICM).toLocaleString('en-US');
     }
 
-    // Auto-calculate
-    document.querySelectorAll('input, select').forEach(el => {
-      el.addEventListener('input', calculate);
-    });
-
-    window.onload = () => { switchRole(); };
+    // Auto-update on any change
+    document.querySelectorAll('input').forEach(input => input.addEventListener('input', calculate));
+    window.onload = calculate;
   </script>
 </body>
 </html>
